@@ -26,7 +26,7 @@ int	main(void)
 	double	result;
 
 	i = 0;
-	write(1, "HOLA\n", 5);
+	printf("    OLD    ----     NEW   \n");
 	mlx = mlx_init();
 	mlx_win = mlx_new_window(mlx, 800, 800, "ventana prueba");
 	img.img = mlx_new_image(mlx, 800, 800);
