@@ -1,8 +1,8 @@
 NAME = fractol
-SRC = main.c
+SRC = main.c scale.c sets.c mlx_funtions.c
 OBJ = $(SRC:.c=.o)
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -Imlx
+CFLAGS = -Wall -Werror -Wextra -Imlx -fsanitize=address -g3
 RM = rm -rf
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
