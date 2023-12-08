@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 #include "fractol.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void	calculate_magn(t_formula *formula)
 {
@@ -41,65 +42,92 @@ void	calculate_z(t_formula *formula)
 	formula->z_real = a - b;
 }
 
-void	mandelbrot(t_fractol *fractol, t_data *img, t_global *global)
+void	do_formula(t_fractol *fractol, t_data *img, t_global *global)
 {
-	t_formula	formula;
 	int	i;
-
-	set_formula(fractol, &formula);
-	global->formula = formula;
 	i = 1;
+	t_formula	formula;
+	set_Julia(fractol, &formula, global);
+	global->formula = formula;
 	while (i < fractol->iters)
 	{
-		calculate_z(&formula);
-		calculate_total(&formula);
-		calculate_magn(&formula);
+		calculate_z(&global->formula);
+		calculate_total(&global->formula);
+		calculate_magn(&global->formula);
 	/*	if (formula.z_magn > 3 && formula.z_magn < 5)
 		{
 			formula.color = 0x00FF0000;
 			my_mlx_pixel_put(img, fractol->x_real_o, fractol->y_imag_o, formula.color);
 			return ;
 		}*/
-		if (formula.z_magn > 5)
+		if (global->formula.z_magn > 2)
 		{
-			formula.color = 0x000000FF;
-			my_mlx_pixel_put(img, fractol->x_real_o, fractol->y_imag_o, formula.color);
+		//	global->formula.color = 0x00FF0000;
+//			global->formula.color = 0xFF0000FF * i / fractol->iters;
+//			global->formula.color = 0x000000FF * i / global->formula.z_magn;
+		/*	if (formula.c_imag < 0 && (formula.c_real > -2 && formula.c_real < 2))*/
+			global->formula.color = 0x0000FF;
+			///	formula.color = 0xFF00000 * global->formula.z_magn;
+/*			if (formula.c_imag > 0 && (formula.c_real > -2 && formula.c_real < 2) && (formula.c_imag > -2 && formula.c_imag < 2))
+				formula.color = 0x000FFFF * (-1 * formula.c_imag) + (-1 * formula.c_real);
+			else
+				formula.color = 0x0000FF;*/
+			//my_mlx_pixel_put(img, fractol->x_real_o, fractol->y_imag_o, 0x000000);
+			my_mlx_pixel_put(img, fractol->x_real_o, fractol->y_imag_o, global->formula.color);
 			return ;
 		}
-		formula.color = 0x000000;
 		i++;
 	}
-	my_mlx_pixel_put(img, fractol->x_real_o, fractol->y_imag_o, formula.color);
+	formula.color = 0xFF00000 * global->formula.z_magn;
+	//global->formula.color = 0x000000;
+	my_mlx_pixel_put(img, fractol->x_real_o, fractol->y_imag_o, global->formula.color);
 }
 
-/*void	leaks(void)
+void	init_mlx(t_global *global, t_data *img , t_mlx *mlx)
+{
+	mlx->mlx = mlx_init();
+	mlx->mlx_win = mlx_new_window(mlx->mlx, 800, 800, "FRACT-OL");
+	img->img = mlx_new_image(mlx->mlx, 800, 800);
+	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
+	global->img = *img;
+	global->mlx = *mlx;
+}
+
+void	mlx_hooks(t_global *global)
+{
+	mlx_key_hook(global->mlx.mlx_win, key_hook_han, global);
+	mlx_mouse_hook(global->mlx.mlx_win, mouse_move, global);
+}
+/*void	leaks(void) 
 {
 	system("leaks fractol");
 }*/
-int	main(void)
+int	main(int argc, char **argv)
 {
 	t_data		img;
-	double		i;
 	t_fractol	fractol;
 	t_global	global;
 	t_mlx		mlx;
 
 //	atexit(leaks);
-	i = 0;
+	set_arguments(argv, argc, &global);
 	set_struct(&fractol);
+	init_mlx(&global, &img, &mlx);	
+/*	if ((argc > 1) && !ft_strncmp(argv[1] , "Julia", 5) && ft_strlen(argv[1]) == 5)
+	{
+		printf("estoy en julia");
+		if (argc != 4)
+			exit(EXIT_FAILURE);
+		else
+		set_Julia(&fractol, &formula ,argv);
+	}
+	else
+		set_Mandelbrot(&fractol, &formula);*/
 	global.fractol = fractol;
-	mlx.mlx = mlx_init();
-	mlx.mlx_win = mlx_new_window(mlx.mlx, 800, 800, "FRACT-OL");
-	img.img = mlx_new_image(mlx.mlx, 800, 800);
-	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
-	global.img = img;
-	global.mlx = mlx;
-	scale_x(&fractol, &img, &global);
-	mlx_key_hook(mlx.mlx_win, key_hook_han, &global);
-	mlx_mouse_hook(mlx.mlx_win, mouse_move, &global);
+	fractal(&fractol, &img, &global);
+	mlx_hooks(&global);
 	mlx_put_image_to_window(mlx.mlx, mlx.mlx_win, img.img, 0, 0);
 	mlx_hook(mlx.mlx_win, 17, 0, close_hook, &global);
-//	mlx_hook(mlx.mlx_win, 6, 0, mouse_move, &global);
 	mlx_loop(mlx.mlx);
 	return (0);
 }

@@ -12,8 +12,8 @@ void	my_mlx_pixel_put(t_data *img, int x, int y, int color)
 
 int	close_hook(t_global *global)
 {
-	mlx_destroy_image(&global->mlx.mlx, global->img.img);
-	mlx_destroy_window(&global->mlx.mlx, global->mlx.mlx_win);
+	mlx_destroy_image(global->mlx.mlx, global->img.img);
+	mlx_destroy_window(global->mlx.mlx, global->mlx.mlx_win);
 	exit(EXIT_FAILURE);
 }
 
@@ -49,8 +49,8 @@ int	key_hook_han(int keycode, t_global *global)
 	// ZOOM RESTORE
 	if (keycode == 15)
 		set_struct(&global->fractol);
-	printf("%i\n", keycode);
-	scale_x(&global->fractol, &global->img, global);
+//	printf("%i\n", keycode);
+	fractal(&global->fractol, &global->img, global);
 	mlx_put_image_to_window(global->mlx.mlx, global->mlx.mlx_win, global->img.img, 0, 0);
 	return (0);
 }
@@ -93,8 +93,8 @@ int	mouse_move(int keycode, int x, int y, t_global *global)
 //	printf("NO HACER CASO%i%i\n", x, y);
 //	printf("El keycode es: %d\n", keycode);
 	factor_zoom_smooth = 0.0;
-	x_real = (rescale((double)x, global->fractol.new_min, global->fractol.new_max, 0, 799) * global->fractol.zoom) + global->fractol.trans_x;
-	y_imag = (rescale((double)y, global->fractol.new_min, global->fractol.new_max, 0, 799) * global->fractol.zoom) + global->fractol.trans_y;
+	x_real = (interpolate((double)x, global->fractol.new_min, global->fractol.new_max, 0, 799) * global->fractol.zoom) + global->fractol.trans_x;
+	y_imag = (interpolate((double)y, global->fractol.new_min, global->fractol.new_max, 0, 799) * global->fractol.zoom) + global->fractol.trans_y;
 	if (keycode == 5)
 	{
 //		printf("Estoy dentro del zoom in\n");
@@ -106,7 +106,7 @@ int	mouse_move(int keycode, int x, int y, t_global *global)
 		return (0);
 	run_zoom(global, x_real, y_imag, factor_zoom_smooth);
 //	printf("nuevo zoom: %f\n", global->fractol.zoom);
-	scale_x(&global->fractol, &global->img, global);
+	fractal(&global->fractol, &global->img, global);
 	mlx_put_image_to_window(global->mlx.mlx, global->mlx.mlx_win, global->img.img, 0, 0);
 	return (0);
 }
