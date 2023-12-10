@@ -96,10 +96,8 @@ int	mouse_move(int keycode, int x, int y, t_global *global)
 	x_real = (interpolate((double)x, global->fractol.new_min, global->fractol.new_max, 0, 799) * global->fractol.zoom) + global->fractol.trans_x;
 	y_imag = (interpolate((double)y, global->fractol.new_min, global->fractol.new_max, 0, 799) * global->fractol.zoom) + global->fractol.trans_y;
 	if (keycode == 5)
-	{
 //		printf("Estoy dentro del zoom in\n");
 		factor_zoom_smooth = global->fractol.zoom / 0.9;
-	}
 	else if (keycode == 4)
 		factor_zoom_smooth = global->fractol.zoom / 1.1;
 	else 

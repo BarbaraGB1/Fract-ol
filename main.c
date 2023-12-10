@@ -42,6 +42,35 @@ void	calculate_z(t_formula *formula)
 	formula->z_real = a - b;
 }
 
+void draw_triangle(t_data *img, int x1, int y1, int x2, int y2, int x3, int y3) 
+{
+    my_mlx_pixel_put(img, x1, y1, 0xFFFF00);
+    my_mlx_pixel_put(img, x2, y2, 0xFF00FF);
+    my_mlx_pixel_put(img, x3, y3, 0x00FFFF);
+}
+void draw_sierpinski(t_data *data, int x1, int y1, int x2, int y2, int x3, int y3, int depth) 
+{
+    if (depth == 0) {
+        // Dibuja el triángulo en la posición actual
+        my_mlx_pixel_put(data, x1, y1, 0xFFFF00);
+        my_mlx_pixel_put(data, x2, y2, 0xFF00FF);
+        my_mlx_pixel_put(data, x3, y3, 0x00FFFF);
+    } else {
+        // Calcula las coordenadas de los puntos medios de los lados del triángulo
+        int mid1_x = (x1 + x2) / 2;
+        int mid1_y = (y1 + y2) / 2;
+        int mid2_x = (x2 + x3) / 2;
+        int mid2_y = (y2 + y3) / 2;
+        int mid3_x = (x1 + x3) / 2;
+        int mid3_y = (y1 + y3) / 2;
+
+        // Llama recursivamente a la función para los tres subtriángulos
+        draw_sierpinski(data, x1, y1, mid1_x, mid1_y, mid3_x, mid3_y, depth - 1);
+        draw_sierpinski(data, mid1_x, mid1_y, x2, y2, mid2_x, mid2_y, depth - 1);
+        draw_sierpinski(data, mid3_x, mid3_y, mid2_x, mid2_y, x3, y3, depth - 1);
+    }
+}
+
 void	do_formula(t_fractol *fractol, t_data *img, t_global *global)
 {
 	int	i;
@@ -110,8 +139,8 @@ int	main(int argc, char **argv)
 	t_mlx		mlx;
 
 //	atexit(leaks);
-	set_arguments(argv, argc, &global);
-	set_struct(&fractol);
+	//set_arguments(argv, argc, &global);
+	//set_struct(&fractol);
 	init_mlx(&global, &img, &mlx);	
 /*	if ((argc > 1) && !ft_strncmp(argv[1] , "Julia", 5) && ft_strlen(argv[1]) == 5)
 	{

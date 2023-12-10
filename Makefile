@@ -1,5 +1,5 @@
 NAME = fractol
-SRC = main.c scale.c sets.c mlx_funtions.c
+SRC = prueba.c #main.c scale.c sets.c mlx_funtions.c
 OBJ = $(SRC:.c=.o)
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -Imlx -fsanitize=address -g3
